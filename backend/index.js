@@ -41,6 +41,26 @@ app.post("/api/form", async (req, res) => {
     }
 })
 
+app.post('/api/auth/register', async (req, res) => {
+    const { name_user, password, age_user } = req.body
+
+    if (!name_user || !password || !age_user) {
+        return res.status(400).json({ error: 'Заполни все поля' })
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const result = await pool.query(
+            'INSERT INTO users (name_user, password, age_user, role) VALUES ($1, $2, $3, $4) RETURNING id, name_user, role',
+            [name_user, hashedPassword, age_user, 'user']
+        )
+
+        res.status(201).json(result.rows[0])
+    } catch (error) {
+        console.error('ОШИБКА:', error)
+        res.status(500).json({ error: error.message })
+    }
+})
 
 
 

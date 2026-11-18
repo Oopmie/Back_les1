@@ -6,6 +6,10 @@ function App() {
   const [data, setData] = useState([])
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
+  const [username , setUsername] = useState('')
+  const [password , setPassword] = useState('')
+  const [userAge , setUserAge] = useState('')
+  const [isError , setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
