@@ -6,10 +6,10 @@ function App() {
   const [data, setData] = useState([])
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
-  const [username , setUsername] = useState('')
-  const [password , setPassword] = useState('')
-  const [userAge , setUserAge] = useState('')
-  const [isError , setIsError] = useState(false)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [userAge, setUserAge] = useState('')
+  const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -32,7 +32,33 @@ function App() {
     catch (error) {
       setMessage("Ошибка:" + error.response?.data?.error)
     }
-  }
+  };
+  const handleSubmits = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setLoading(true);
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/register', {
+        name_user: username,
+        password: password,
+        age_user: userAge,
+      });
+
+      setMessage(response.data.message || 'Регистрация успешна');
+      setIsError(false);
+      setUsername('');
+      setPassword('');
+      setUserAge('');
+
+    } catch (error) {
+      const errorMsg = error.response?.data?.error || 'Ошибка регистрации';
+      setMessage(errorMsg);
+      setIsError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -44,11 +70,51 @@ function App() {
           </ul>
         ))}
       </div>
+
       <form action="" onSubmit={handlForm}>
-        <input type="text" placeholder='name' value={name} onChange={(e) => setName(e.target.value)} />
-        <input type="text" placeholder='code' value={code} onChange={(e) => setCode(e.target.value)} />
+        <input
+          type="text"
+          placeholder='name'
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder='code'
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+        />
         <button type='submit'>send</button>
       </form>
+
+      <div className='App'>
+        <div className="form-containerr">
+          <h2>Регистрация</h2>
+          <form action="" onSubmit={handleSubmits}>
+            <input
+              type="text"
+              placeholder='логин'
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder='пароль'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder='возраст'
+              value={password}
+              onChange={(e) => setUserAge(e.target.value)}
+              required
+            />
+            <button type='submit'>send</button>
+          </form>
+        </div>
+      </div>
     </>
   )
 }
