@@ -60,6 +60,22 @@ function App() {
     }
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setLoading(true);
+    setIsError(false);
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/auth/login',{
+        name_user: loginUsername,
+        password:loginPassword,
+      });
+
+      const newToken //продолжить
+    }
+  }
+
   return (
     <>
       <div>

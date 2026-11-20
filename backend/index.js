@@ -2,6 +2,8 @@ require('dotenv').config()
 const express = require("express")
 const cors = require("cors")
 const { Pool } = require("pg")
+const bcrypt = require("bcrypt")//перепроверить
+//reqieywduwu
 
 const app = express()
 
@@ -18,6 +20,14 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT
 })
+
+const JWT_SECRET = process.env.JWT_SECRET || process.env.DB_SECRET
+
+if(!JWT_SECRET){
+    throw new Error('JWT_SECRET is required')
+}
+
+const PORT = 3000
 
 app.get('/api/main', async (req, res) => {
     try {
@@ -105,8 +115,6 @@ app.post('/app/auth/login', async (req, res) => {
         res.status(500).json({ error: 'Ошибка сервера' })
     }
 })
-
-const PORT = 3000
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
