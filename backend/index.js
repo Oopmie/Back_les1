@@ -62,7 +62,49 @@ app.post('/api/auth/register', async (req, res) => {
     }
 })
 
+app.post('/app/auth/login', async (req, res) => {
+    const { name_user, password } = req.body
 
+    try {
+        const result = await pool.query(
+            'SELECT id, name_user, password, role FROM users WHERE name_user = $1',
+            [name_user]
+        )            
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Неверные данные' })
+        }
+
+        const user = result.rows[0]
+        const valid = await bcrypt.compare(password, user.password)
+
+        if (!valid) {
+            return res.status(401).json({ error: 'Неверные данные' })
+        }
+        const token = jwt.sign(
+            {
+                id: user.id,
+                name_user: user.name_user,
+                role: user.role
+            },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        )
+
+        res.json({
+            user: {
+                id: user.id,
+                name_user: user.name_user,
+                role: user.role
+            },
+            token
+        })
+
+    } catch (error) {
+        console.error('Login error', error)
+        res.status(500).json({ error: 'Ошибка сервера' })
+    }
+})
 
 const PORT = 3000
 
